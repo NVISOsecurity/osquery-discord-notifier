@@ -47,11 +47,13 @@ pip install -r requirements.txt
 
 ![Example Image 3](docs/example_server_uptime.png)
 
-## Examples
+## Example alerts
 
-### Example: New startup item detected
+A few examples of notifications useful while monitoring a home lab environment:
 
-![Example Image 1](docs/example_mimikatz_detected.png)
+### Malware download detected
+
+![Malware Download example](docs/example_mimikatz_detected.png)
 
 Based on this osquery.conf configuration:
 ```
@@ -64,9 +66,9 @@ Based on this osquery.conf configuration:
 }
 ```
 
-### Example: Malware download detected
+### New startup item detected
 
-![Example Image 2](docs/example_docker_startup.png)
+![Startup item added exaloke](docs/example_docker_startup.png)
 
 Based on this osquery.conf configuration:
 ```
@@ -79,6 +81,22 @@ Based on this osquery.conf configuration:
 }
 ```
 
+### New RDP Login session
+
+![RDP Session example](docs/example_new_rdp_session.png)
+
+Based on this osquery.conf configuration:
+
+```
+"schedule": {
+    "rdp_sessions": {
+        "query": "SELECT * FROM logged_in_users WHERE type = 'rdp';",
+        "interval": 60,
+        "description": "Checks for active RDP sessions"
+    }
+}
+```
+
 ## Feature Wishlist
 
 A few things we might implement in future versions of the tool
@@ -86,6 +104,10 @@ A few things we might implement in future versions of the tool
 - Let the user interact with the bot by asking it follow-up questions, which are then processed by the configured Language Model (``When did you see a similar event in the past?``, ``What does S-1-5-21-500 mean?``, ``Is this event something I should worry about?``, ...).
 - More commands beyond ``!stats`` (although we don't want to turn this into a potential C&C: commands should always be "read only" and not cause side-effects on the server).
 - A better event loop.
+
+## Acknowledgements
+
+Thanks to the [osquery](https://github.com/osquery/osquery) team for building great software making this project possible.
 
 ## Contributing
 
