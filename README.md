@@ -8,7 +8,7 @@ This allows for quick and easy monitoring of your system's security and performa
 
 The tool continuously monitors the osquery ``osqueryd.results.log`` file, detects newly added events, and processes them through an LLM (if configured & available - a fallback is available) before notifying you through a Private Message in Discord.
 
-This tool is by no means a replacement for a professional, scalable SOC/security monitoring service. It was developed out of the need to monitor a small set of important events in a lightweight manner within a home lab setup, and to monitor a very small number of servers for important (security) events.
+This tool is by no means a replacement for a professional, scalable ecurity monitoring service. It was developed out of the need to monitor a small set of important events in a lightweight manner within a home lab setup, and to monitor a very small number of servers for important (security) events.
 
 ## Download & Install
 
