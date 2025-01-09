@@ -1,0 +1,5 @@
+discord.py
+openai
+pylint
+pytz
+python-dotenv
