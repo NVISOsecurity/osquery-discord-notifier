@@ -112,5 +112,5 @@ Thanks to the [osquery](https://github.com/osquery/osquery) team for building gr
 ## Contributing
 
 We would love to hear from you on a Pull Request or Issue in this repository.   
-Alternatively, you can reach out to our team at labs@nviso.eu.
+Alternatively, you can reach out to our team at research@nviso.eu.
 
