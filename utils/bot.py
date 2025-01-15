@@ -20,31 +20,28 @@ class LogEventBot:
 
     def __init__(self, logger, osquery_log_reader, llm_assistant):
         self.logger = logger
-
         self.os_query_log_reader: OsqueryLogReader = osquery_log_reader
         self.llm_assistant: LLMAssistant = llm_assistant
-
         self.authorized_user_id = int(os.environ["DISCORD_AUTHORIZED_USER_ID"])
-
         self.bot = commands.Bot(command_prefix="!", intents=self.intents)
+        self.event_queue = asyncio.Queue()
 
         self.bot.add_listener(self.on_ready)
         self.bot.add_listener(self.on_message)
-
         self.bot.add_command(commands.Command(self.stats))
 
     def run(self):
+        # Start the log monitoring in a separate thread
+        asyncio.get_event_loop().run_in_executor(None, self.start_log_monitoring)
         self.bot.run(os.environ["DISCORD_BOT_TOKEN"], reconnect=True)
 
-    async def background_tasks(self):
-        first_run = True
+    def start_log_monitoring(self):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(self.log_monitoring_task())
+
+    async def log_monitoring_task(self):
         while True:
-            user = await self.bot.fetch_user(self.authorized_user_id)
-
-            if first_run:
-                await user.send("osquery_discord_notifier.py is now running.")
-                first_run = False
-
             new_events = self.os_query_log_reader.get_recent_log_events()
             filtered_events = filter_events(new_events)
 
@@ -52,45 +49,51 @@ class LogEventBot:
                 self.logger.info("Processing %s new events", len(new_events))
 
             if len(filtered_events) > 0:
-                self.logger.info("Notifying %s filtered events", len(filtered_events))
-
+                self.logger.info("Queueing %s filtered events", len(filtered_events))
                 for event in filtered_events:
-                    if user:
-
-                        try:
-                            llm_response = self.llm_assistant.llm_question(
-                                json.dumps(event, indent=2)
-                            )
-
-                            message = (
-                                "```"
-                                + llm_response.get("event_summary")
-                                + "\n\n"
-                                + llm_response.get("event_details")
-                                + "\n\n"
-                                + "Original event data:"
-                                + "\n\n"
-                                + json.dumps(event, indent=2)
-                                + "```"
-                            )
-
-                        except Exception as e: 
-                            # If for any reason the LLM model fails to respond, fallback to the original event
-                            message = (
-                                "```"
-                                + json.dumps(event, indent=2)
-                                + "\n\n"
-                                + "Warning: LLM model failed to respond. Fallback to original event."
-                                + "```"
-                            )
-                        
-                        # Truncate message to at most 2000 characters & add a note about truncation
-                        if len(message) > 2000:
-                            message = message[:1900] + "\n\n" + "Warning: Message truncated.```"
-
-                        await user.send(message)
+                    await self.event_queue.put(event)
 
             await asyncio.sleep(1)
+
+    async def background_tasks(self):
+        user = await self.bot.fetch_user(self.authorized_user_id)
+        await user.send("osquery_discord_notifier.py is now running.")
+
+        while True:
+            event = await self.event_queue.get()
+            if user:
+                try:
+                    llm_response = self.llm_assistant.llm_question(
+                        json.dumps(event, indent=2)
+                    )
+
+                    message = (
+                        "```"
+                        + llm_response.get("event_summary")
+                        + "\n\n"
+                        + llm_response.get("event_details")
+                        + "\n\n"
+                        + "Original event data:"
+                        + "\n\n"
+                        + json.dumps(event, indent=2)
+                        + "```"
+                    )
+
+                except Exception as e:
+                    message = (
+                        "```"
+                        + json.dumps(event, indent=2)
+                        + "\n\n"
+                        + "Warning: LLM model failed to respond. Fallback to original event."
+                        + "```"
+                    )
+                
+                if len(message) > 2000:
+                    message = message[:1900] + "\n\n" + "Warning: Message truncated.```"
+
+                await user.send(message)
+
+            self.event_queue.task_done()
 
     async def on_ready(self):
         self.bot.loop.create_task(self.background_tasks())
@@ -111,7 +114,6 @@ class LogEventBot:
             try:
                 message = "```"
 
-                # System uptime
                 uptime_result = subprocess.run(
                     "uptime", shell=True, capture_output=True, text=True, check=True
                 )
