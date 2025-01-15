@@ -24,6 +24,29 @@ class LLMAssistant:
             "original_event": "the original event data",
         }
 
+    def llm_test(self) -> str:
+        prompt = "Respond to the user with a friendly short sentence mentioning that the LLM test was successful. Add a small random fact to show you are able to respond. Respond in plain english, no JSON, max 10 words."
+
+        try:
+            response = self.azure_openai_client.chat.completions.create(
+                model=self.openai_model_name,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a helpful assistant designed to output JSON.",
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    },
+                ],
+            )
+
+            return response.choices[0].message.content
+        except Exception as e:
+            self.logger.error("LLM test failed: %s", e)
+            return "LLM test failed."
+        
     def llm_question(self, question: str) -> str:
         prompt = f"Example of expected JSON output: {self.json_response_example} \n\n Question: {question}"
 

@@ -57,7 +57,10 @@ class LogEventBot:
 
     async def background_tasks(self):
         user = await self.bot.fetch_user(self.authorized_user_id)
+        llm_test = self.llm_assistant.llm_test()
+        
         await user.send("osquery_discord_notifier.py is now running.")
+        await user.send(llm_test)
 
         while True:
             event = await self.event_queue.get()
@@ -79,7 +82,7 @@ class LogEventBot:
                         + "```"
                     )
 
-                except Exception as e:
+                except Exception:
                     message = (
                         "```"
                         + json.dumps(event, indent=2)
