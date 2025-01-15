@@ -25,7 +25,7 @@ class LLMAssistant:
         }
 
     def llm_test(self) -> str:
-        prompt = "Respond to the user with a friendly short sentence mentioning that the LLM test was successful. Add a small random fact to show you are able to respond. Respond in plain english, no JSON, max 10 words."
+        prompt = "Respond to the user with a friendly short sentence mentioning that the LLM test was successful. Add a small random fact to show you are able to respond. max 10 words."
 
         try:
             response = self.azure_openai_client.chat.completions.create(
@@ -33,7 +33,7 @@ class LLMAssistant:
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are a helpful assistant designed to output JSON.",
+                        "content": "You are a helpful assistant",
                     },
                     {
                         "role": "user",
