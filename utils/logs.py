@@ -61,15 +61,6 @@ def configure_logger():
 
     return logger
 
-def filter_events(events):
-    filtered_events = []
-    for event in events:
-        if event.get("action") == "added":
-            filtered_events.append(event)
-
-    return filtered_events
-
-
 def convert_json_to_table(json_data):
     flat_event = {}
     for key, value in json_data.items():

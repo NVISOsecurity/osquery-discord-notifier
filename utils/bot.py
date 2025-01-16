@@ -8,7 +8,6 @@ from discord.ext import commands
 
 from .llm import LLMAssistant
 from .logs import OsqueryLogReader
-from .logs import filter_events
 
 
 class LogEventBot:
@@ -46,15 +45,14 @@ class LogEventBot:
                 first_run = False
 
             new_events = self.os_query_log_reader.get_recent_log_events()
-            filtered_events = filter_events(new_events)
 
             if len(new_events) > 0:
                 self.logger.info("Processing %s new events", len(new_events))
 
-            if len(filtered_events) > 0:
-                self.logger.info("Notifying %s filtered events", len(filtered_events))
+            if len(new_events) > 0:
+                self.logger.info("Notifying %s new events", len(new_events))
 
-                for event in filtered_events:
+                for event in new_events:
                     if user:
 
                         try:
