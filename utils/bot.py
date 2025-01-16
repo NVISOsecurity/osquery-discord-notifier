@@ -75,11 +75,6 @@ class LogEventBot:
                         + llm_response.get("event_summary")
                         + "\n\n"
                         + llm_response.get("event_details")
-                        + "\n\n"
-                        + "Original event data:"
-                        + "\n\n"
-                        + json.dumps(event, indent=2)
-                        + "```"
                     )
 
                 except Exception:
