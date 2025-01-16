@@ -53,7 +53,7 @@ class LogEventBot:
                 for event in filtered_events:
                     await self.event_queue.put(event)
 
-            await asyncio.sleep(10)
+            await asyncio.sleep(1)
 
     async def background_tasks(self):
         user = await self.bot.fetch_user(self.authorized_user_id)
