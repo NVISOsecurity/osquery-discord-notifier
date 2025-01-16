@@ -10,7 +10,7 @@ class OsqueryLogReader:
     """
 
     def __init__(self, logger):
-        load_dotenv()
+        load_dotenv(override=True)
         self.log_path = os.getenv("OSQUERY_LOG_PATH")
         self.seen_events = []
         self.logger = logger
