@@ -71,7 +71,6 @@ class LogEventBot:
                     )
 
                     message = (
-                        "```"
                         + llm_response.get("event_summary")
                         + "\n\n"
                         + llm_response.get("event_details")
