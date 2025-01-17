@@ -65,17 +65,7 @@ class LogEventBot:
                     llm_response = self.llm_assistant.llm_question(
                         json.dumps(event, indent=2)
                     )
-            if len(new_events) > 0:
-                self.logger.info("Notifying %s new events", len(new_events))
-
-                for event in new_events:
-                    if user:
-
-                        try:
-                            llm_response = self.llm_assistant.llm_question(
-                                json.dumps(event, indent=2)
-                            )
-
+            
                     message = (
                         llm_response.get("event_summary")
                         + "\n\n"
