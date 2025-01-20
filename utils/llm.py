@@ -16,7 +16,7 @@ class LLMAssistant:
 
     self.json_response_example = {
       "event_summary": "a one sentence summary of the event",
-      "event_details": "a detailed description of the event",
+      "event_details": "a detailed description of the event. Explicitly mention if the event looks potentially malicious or not, and briefly explain why.",
       "original_event": "the original event data",
     }
 
