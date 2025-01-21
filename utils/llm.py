@@ -15,8 +15,13 @@ class LLMAssistant:
     )
 
     self.json_response_example = {
-      "event_summary": "Summary of the event (10 words or less)",
-      "event_details": "Description of the event. Explicitly mention if the event looks potentially malicious or not, and briefly explain why.",
+      "event_summary": "Summary of the event (10 words or less), always start with an appropriate and relevant emoji symbolizing the event.",
+      "event_details": """Description of the event. 
+                          Explicitly mention if the event looks potentially malicious or not, and briefly explain why. 
+                          Format this entire field as a Markdown unordered list with at most 3 items, so focus on the most important information.
+                          Do not literally mention all the fields in the event data, but rather summarize the key points.
+                          Avoid using semicolons in your unordered list but generate short and easy to understand sentences.
+                        """,
       "original_event": "the original event data",
     }
 

@@ -55,11 +55,18 @@ class LogEventBot:
         user = await self.bot.fetch_user(self.authorized_user_id)
         llm_test = self.llm_assistant.llm_test()
         
-        await user.send("osquery_discord_notifier.py is now running.")
+        await user.send("**osquery_discord_notifier.py is now monitoring events**")
         await user.send(llm_test)
 
         while True:
             event = await self.event_queue.get()
+
+            # For now, we ignore events that are not "added"
+            # This avoids duplicate events like "added" and "removed" for the same event, 
+            # such as a battery change (AC Power removed, Battery added).
+            if event.get("action") != "added":
+                continue
+
             if user:
                 try:
                     llm_response = self.llm_assistant.llm_question(
@@ -67,7 +74,7 @@ class LogEventBot:
                     )
             
                     message = (
-                        "**"+llm_response.get("event_summary")+"**"
+                        "## " + llm_response.get("event_summary")
                         + "\n"
                         + llm_response.get("event_details")
                     )
