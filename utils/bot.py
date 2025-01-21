@@ -67,8 +67,8 @@ class LogEventBot:
                     )
             
                     message = (
-                        llm_response.get("event_summary")
-                        + "\n\n"
+                        "**"+llm_response.get("event_summary")+"**"
+                        + "\n"
                         + llm_response.get("event_details")
                     )
 
@@ -76,7 +76,7 @@ class LogEventBot:
                     message = (
                         "```"
                         + json.dumps(event, indent=2)
-                        + "\n\n"
+                        + "\n"
                         + "Warning: LLM model failed to respond. Fallback to original event."
                         + "```"
                     )
