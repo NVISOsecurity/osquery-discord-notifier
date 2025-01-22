@@ -16,7 +16,7 @@ class OsqueryLogReader:
         self.logger = logger
         self.run_count = 0
 
-    def get_recent_log_events(self):
+    def get_recent_log_events(self, skip_already_seen = True):
         new_events = []
 
         with open(self.log_path, "r", encoding="utf-8") as log_file:
@@ -25,7 +25,7 @@ class OsqueryLogReader:
         for line in log_lines:
             try:
                 event = json.loads(line)
-                if event not in self.seen_events:
+                if (event not in self.seen_events) or (not skip_already_seen):
                     new_events.append(event)
                     self.seen_events.append(event)
 

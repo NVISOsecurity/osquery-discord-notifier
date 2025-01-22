@@ -26,7 +26,7 @@ class LLMAssistant:
     }
 
   def llm_test(self) -> str:
-    prompt = "Respond to the user with a friendly short sentence mentioning that the LLM test was successful. Add a small random fact to show you are able to respond. max 10 words."
+    prompt = "Respond to the user with a friendly short sentence mentioning that the LLM test was successful and that the LLM AI integration is enabled."
 
     try:
       response = self.openai_client.chat.completions.create(

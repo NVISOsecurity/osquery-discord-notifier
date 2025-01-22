@@ -28,6 +28,7 @@ class LogEventBot:
         self.bot.add_listener(self.on_ready)
         self.bot.add_listener(self.on_message)
         self.bot.add_command(commands.Command(self.stats))
+        self.bot.add_command(commands.Command(self.events))
 
     def run(self):
         # Start the log monitoring in a separate thread
@@ -107,6 +108,23 @@ class LogEventBot:
             and message.author.id == self.authorized_user_id
         ):
             print(f"Received DM from {message.author}: {message.content}")
+
+    async def events(self, ctx, *_):
+        user = await self.bot.fetch_user(self.authorized_user_id)
+        if user:
+            try:
+                message = "```"
+                recent_events = self.os_query_log_reader.get_recent_log_events(skip_already_seen=False)
+                for event in recent_events[-5:]:
+                    message += json.dumps(event, indent=2) + "\n\n"
+                message += "```"
+
+                # Limit the message to 2000 characters at most, the Discord limit
+                if len(message) > 2000:
+                    message = message[:1900] + "\n\n" + "Warning: Message truncated.```"
+                await user.send(message)
+            except discord.HTTPException as e:
+                await ctx.send(f"Failed to send message due to HTTP error: {e}")
 
     async def stats(self, ctx, *_):
         user = await self.bot.fetch_user(self.authorized_user_id)

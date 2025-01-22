@@ -43,9 +43,16 @@ pip install -r requirements.txt
 * * * * * run-one /repos/osquery-discord-notifier/.venv/bin/python /repos/osquery-discord-notifier/osquery_discord_notifier.py > /var/log/osquery_discord_notifier.log
 ```
 
-9. (Optional) You can perform a "liveness" check on the bot simply by sending it the message ``!stats``, which will respond with the server uptime:
+## Bot commands
+
+### !stats
+You can perform a "liveness" check on the bot simply by sending it the message ``!stats``, which will respond with the server uptime:
 
 ![Example Image 3](docs/example_server_uptime.png)
+
+### !events
+
+Send message ``!events`` to get an overview of the 5 latest events in the monitored osquery log file (or a truncated version in case the message exceeds the Discord limit of 2000 characters).
 
 ## Example alerts
 
