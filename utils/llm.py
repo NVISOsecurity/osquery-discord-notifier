@@ -18,7 +18,8 @@ class LLMAssistant:
       "event_summary": "Summary of the event (10 words or less), always start with an appropriate and relevant emoji symbolizing the event.",
       "event_details": """Description of the event. 
                           Explicitly mention if the event looks potentially malicious or not, and briefly explain why. 
-                          Format this entire field as a Markdown unordered list with at most 3 items, so focus on the most important information.
+                          Format this entire field as a Markdown unordered list with at most 5 items, so focus on the most important information.
+                          Include the details required for the user to understand at a high level if the event looks normal, such as service names and file paths.
                           Do not literally mention all the fields in the event data, but rather summarize the key points.
                           Avoid using semicolons in your unordered list but generate short and easy to understand sentences.
                         """,
