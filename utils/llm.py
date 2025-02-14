@@ -2,6 +2,10 @@ import os
 import json
 from os import path
 from openai import OpenAI
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 class LLMAssistant:
   def __init__(self, logger):
@@ -9,9 +13,11 @@ class LLMAssistant:
 
     self.openai_api_key = os.getenv("OPENAI_API_KEY")
     self.openai_model_name = os.getenv("OPENAI_MODEL_NAME")
+    self.openai_base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com")
 
     self.openai_client = OpenAI(
         api_key=self.openai_api_key,
+        base_url=self.openai_base_url
     )
 
     self.json_response_example = {
