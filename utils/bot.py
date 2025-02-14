@@ -73,14 +73,15 @@ class LogEventBot:
                     llm_response = self.llm_assistant.llm_question(
                         json.dumps(event, indent=2)
                     )
-            
+
                     message = (
                         "## " + llm_response.get("event_summary")
                         + "\n"
                         + llm_response.get("event_details")
                     )
 
-                except Exception:
+                except Exception as e:
+                    self.logger.error("LLM model failed to respond: %s", str(e))
                     message = (
                         "```"
                         + json.dumps(event, indent=2)
@@ -88,7 +89,7 @@ class LogEventBot:
                         + "Warning: LLM model failed to respond. Fallback to original event."
                         + "```"
                     )
-                
+        
                 if len(message) > 2000:
                     message = message[:1900] + "\n\n" + "Warning: Message truncated.```"
 
