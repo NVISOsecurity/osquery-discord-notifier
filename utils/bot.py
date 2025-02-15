@@ -81,12 +81,12 @@ class LogEventBot:
                     )
 
                 except Exception as e:
-                    self.logger.error("LLM model failed to respond: %s", str(e))
+                    self.logger.error("LLM model failed to respond with a valid JSON: %s", str(e))
                     message = (
                         "```"
                         + json.dumps(event, indent=2)
                         + "\n"
-                        + "Warning: LLM model failed to respond. Fallback to original event."
+                        + "Warning: LLM model failed to respond with a valid JSON. Fallback to original event."
                         + "```"
                     )
         
@@ -108,7 +108,7 @@ class LogEventBot:
             isinstance(message.channel, discord.DMChannel)
             and message.author.id == self.authorized_user_id
         ):
-            print(f"Received DM from {message.author}: {message.content}")
+            self.logger.info(f"Received DM from {message.author}: {message.content}")
 
     async def events(self, ctx, *_):
         user = await self.bot.fetch_user(self.authorized_user_id)
