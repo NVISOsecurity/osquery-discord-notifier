@@ -50,7 +50,7 @@ class LogEventBot:
                 for event in new_events:
                     await self.event_queue.put(event)
 
-            await asyncio.sleep(1)
+            await asyncio.sleep(5)
 
     async def background_tasks(self):
         user = await self.bot.fetch_user(self.authorized_user_id)
@@ -94,7 +94,6 @@ class LogEventBot:
                     message = message[:1900] + "\n\n" + "Warning: Message truncated.```"
 
                 await user.send(message)
-
             self.event_queue.task_done()
 
     async def on_ready(self):
