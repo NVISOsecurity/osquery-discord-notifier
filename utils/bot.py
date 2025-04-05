@@ -54,10 +54,6 @@ class LogEventBot:
 
     async def background_tasks(self):
         user = await self.bot.fetch_user(self.authorized_user_id)
-        llm_test = self.llm_assistant.llm_test()
-        
-        await user.send("**osquery_discord_notifier.py is now monitoring events**")
-        await user.send(llm_test)
 
         while True:
             event = await self.event_queue.get()
@@ -97,6 +93,12 @@ class LogEventBot:
             self.event_queue.task_done()
 
     async def on_ready(self):
+        user = await self.bot.fetch_user(self.authorized_user_id)
+        llm_test = self.llm_assistant.llm_test()
+        
+        await user.send("**osquery_discord_notifier.py is now monitoring events**")
+        await user.send(llm_test)
+    
         self.bot.loop.create_task(self.background_tasks())
         self.logger.info(
             "Logged in as %s and ready to monitor osquery logs", self.bot.user
