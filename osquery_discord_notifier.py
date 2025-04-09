@@ -1,7 +1,3 @@
-# pylint: disable=missing-module-docstring
-import os
-import logging
-
 from utils.logs import OsqueryLogReader, configure_logger
 from utils.bot import LogEventBot
 from utils.llm import LLMAssistant

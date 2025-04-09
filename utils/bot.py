@@ -24,6 +24,7 @@ class LogEventBot:
         self.authorized_user_id = int(os.environ["DISCORD_AUTHORIZED_USER_ID"])
         self.bot = commands.Bot(command_prefix="!", intents=self.intents)
         self.event_queue = asyncio.Queue()
+        self.initialized = False
 
         self.bot.add_listener(self.on_ready)
         self.bot.add_listener(self.on_message)
@@ -59,7 +60,7 @@ class LogEventBot:
             event = await self.event_queue.get()
 
             # For now, we ignore events that are not "added"
-            # This avoids duplicate events like "added" and "removed" for the same event, 
+            # This avoids duplicate events like "added" and "removed" for the same event,
             # such as a battery change (AC Power removed, Battery added).
             if event.get("action") != "added":
                 continue
@@ -76,16 +77,15 @@ class LogEventBot:
                         + llm_response.get("event_details")
                     )
 
-                except Exception as e:
+                except Exception as e: # pylint: disable=broad-exception-caught
                     self.logger.error("LLM model failed to respond with a valid JSON: %s", str(e))
                     message = (
                         "```"
                         + json.dumps(event, indent=2)
                         + "\n"
-                        + "Warning: LLM model failed to respond with a valid JSON. Fallback to original event."
+                        + "Warning: LLM model failed to respond with a valid JSON."
                         + "```"
                     )
-        
                 if len(message) > 2000:
                     message = message[:1900] + "\n\n" + "Warning: Message truncated.```"
 
@@ -95,10 +95,14 @@ class LogEventBot:
     async def on_ready(self):
         user = await self.bot.fetch_user(self.authorized_user_id)
         llm_test = self.llm_assistant.llm_test()
-        
-        await user.send("**osquery_discord_notifier.py is now monitoring events**")
-        await user.send(llm_test)
-    
+
+        if not self.initialized:
+            self.initialized = True
+            await user.send("**osquery_discord_notifier.py is now monitoring events**")
+            await user.send(llm_test)
+
+        # Invalidate any existing background tasks in case on_ready is called after a reconnect
+
         self.bot.loop.create_task(self.background_tasks())
         self.logger.info(
             "Logged in as %s and ready to monitor osquery logs", self.bot.user
@@ -116,7 +120,9 @@ class LogEventBot:
         if user:
             try:
                 message = "```"
-                recent_events = self.os_query_log_reader.get_recent_log_events(skip_already_seen=False)
+                recent_events = self.os_query_log_reader.get_recent_log_events(
+                    skip_already_seen=False
+                )
                 for event in recent_events[-5:]:
                     message += json.dumps(event, indent=2) + "\n\n"
                 message += "```"
